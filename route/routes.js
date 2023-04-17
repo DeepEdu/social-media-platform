@@ -1,7 +1,7 @@
 const express = require("express");
 const uuid = require("uuid");
 const jwt = require("jsonwebtoken");
-require("../model/.env");
+require("dotenv").config();
 const auth = require("../middleware/auth");
 
 // Express route
@@ -20,7 +20,7 @@ Route.route("/api/authenticate").post(async (req, res, next) => {
   } else {
     var access;
     // Create Token
-    var token = jwt.sign({ id: existingUser.id }, JWT_SECRET_KEY, {
+    var token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "2h",
     });
     res.json(token);

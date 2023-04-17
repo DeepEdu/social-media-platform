@@ -2,7 +2,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const expect = chai.expect;
 const jwt = require("jsonwebtoken");
-require("./model/.env");
+require("dotenv").config();
 const uuid = require("uuid");
 
 const app = require("./index");
@@ -67,7 +67,7 @@ describe("/", () => {
       expect(res).to.have.property("body").which.is.a("string");
 
       // Verify that the token can be decoded using the JWT_SECRET_KEY
-      const decodedToken = jwt.verify(res.body, JWT_SECRET_KEY);
+      const decodedToken = jwt.verify(res.body, process.env.JWT_SECRET_KEY);
       expect(decodedToken).to.have.property("id").which.is.a("string");
     });
   }, 10000);
@@ -82,7 +82,10 @@ describe("/", () => {
       newUser = await createUser();
       let userId = newUser._id;
       const differentUserId = "6026df1571d3c648d84348d7";
-      const tokenWithDifferentId = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      const tokenWithDifferentId = jwt.sign(
+        { id: userId },
+        process.env.JWT_SECRET_KEY
+      );
 
       const res = await chai
         .request(app)
@@ -104,7 +107,7 @@ describe("/", () => {
         following: [],
       });
       let testUserId = newUser._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const res = await chai
         .request(app)
@@ -135,7 +138,7 @@ describe("/", () => {
       followingId = userfollowing._id;
       userfollower.following = followingId;
       userfollowing.followers = userId;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
       const res = await chai
         .request(app)
         .post(`/api/unfollow/${followingId}`)
@@ -172,7 +175,7 @@ describe("/", () => {
     //   followingId = userfollowing._id;
     //   userfollower.following = followingId;
     //   userfollowing.followers = userId;
-    //   token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+    //   token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
     //   const res = await chai
     //     .request(app)
     //     .post(`/api/unfollow/${followingId}`)
@@ -193,7 +196,7 @@ describe("/", () => {
       const userfollower = await createUser();
 
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
       const res = await chai
         .request(app)
         .get("/api/user")
@@ -220,7 +223,7 @@ describe("/", () => {
     it("should create a new post when request is valid", async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const post = {
         title: "Test Post Title",
@@ -251,7 +254,7 @@ describe("/", () => {
       // Create a new user that is authorized to delete the post
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
       const postId = newPost.postId;
@@ -273,7 +276,7 @@ describe("/", () => {
       // Create a new user that is authorized to delete the post
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const postId = "1234567890";
       await postUserSchema.create({
@@ -293,7 +296,7 @@ describe("/", () => {
     it("Not Authorized To Delete the Post", async () => {
       // Create a new user that is not authorized to delete the post
       let userId = 12345678;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
 
@@ -318,7 +321,7 @@ describe("/", () => {
     it('should return status 201 and message "Successfully Liked The Post" when post exists and is liked', async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
       const postId = newPost.postId;
@@ -342,7 +345,7 @@ describe("/", () => {
     it('should return status 201 and message "Successfully Unliked The Post" when post exists and is liked', async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
       const postId = newPost.postId;
@@ -366,7 +369,7 @@ describe("/", () => {
     it("it should add a comment to a post", async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
       const postId = newPost.postId;
@@ -393,7 +396,7 @@ describe("/", () => {
     it("it should return the number of likes and comments for a post", async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const newPost = await createPost();
       const postId = newPost.postId;
@@ -418,7 +421,7 @@ describe("/", () => {
     it("should return an array of posts for a valid user", async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
       // Creating Two Post for one user
       const newPost1 = await createPost();
       const newPost2 = await createPost();
@@ -445,7 +448,7 @@ describe("/", () => {
     it("should return a 201 status for a user with zero posts", async () => {
       const userfollower = await createUser();
       let userId = userfollower._id;
-      token = jwt.sign({ id: userId }, JWT_SECRET_KEY);
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const response = await chai
         .request(app)

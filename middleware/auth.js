@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-require("../model/.env");
+require("dotenv").config();
 
 const verifyToken = (req, res, next) => {
   const token =
@@ -8,7 +8,7 @@ const verifyToken = (req, res, next) => {
     return res.status(403).send("A token is required for authentication");
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET_KEY);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.id = decoded.id;
   } catch (err) {
     console.log(err);
