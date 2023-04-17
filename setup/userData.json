@@ -1,0 +1,23 @@
+[
+    {
+        "email": "dummyuser1@example.com",
+        "password": "user1password",
+        "userName": "",
+        "followers": [],
+        "following": []
+    },
+    {
+        "email": "dummyuser2@example.com",
+        "password": "user2password",
+        "userName": "",
+        "followers": [],
+        "following": []
+    },
+    {
+        "email": "dummyuser3@example.com",
+        "password": "user3password",
+        "userName": "",
+        "followers": [],
+        "following": []
+    }
+]
