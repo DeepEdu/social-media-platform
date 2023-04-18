@@ -228,6 +228,26 @@ describe("/", () => {
           expect(res.body).to.have.property("time");
         });
     });
+
+    it("should return a 400 error if title or description is missing", async () => {
+      // Register new User
+      const userfollower = await createUser();
+      let userId = userfollower._id;
+
+      // New JWT token with user ID
+      token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
+
+      // send no data in the request body
+      chai
+        .request(app)
+        .post("/api/posts/")
+        .set("x-access-token", token)
+        .send({})
+        .end((err, res) => {
+          expect(res).to.have.status(400);
+          expect(res.text).to.equal("Title and description are required");
+        });
+    });
   }, 10000);
 
   describe("/ User Delete Post ", () => {
@@ -309,7 +329,7 @@ describe("/", () => {
 
   describe("/ User Like Post ", () => {
     let token;
-    it('should return status 201 and message "Successfully Liked The Post" when post exists and is liked', async () => {
+    it('should return status 201 and message "Successfully Liked The Post" when post exists', async () => {
       // Register new User
       const userfollower = await createUser();
       let userId = userfollower._id;
