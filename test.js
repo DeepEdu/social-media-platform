@@ -80,6 +80,25 @@ describe("/", () => {
     let newUser;
     let token;
     let testUser;
+    // JWT Token Expire Test case
+    it("should return error that JWT Token expires", async () => {
+      // Register a new user
+      newUser = await createUser();
+      let userId = newUser._id;
+      // Expired JWT Token
+      const tokenWithDifferentId = jwt.sign(
+        { id: userId },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "1s" }
+      );
+      const differentUserId = "6026df1571d3c648d84348d7";
+
+      const res = await chai
+        .request(app)
+        .post(`/api/follow/${differentUserId}`)
+        .set("x-access-token", tokenWithDifferentId);
+      expect(res).to.have.status(400);
+    });
     it('should return "400 User not found" if user is not in database', async () => {
       // Register a new user
       newUser = await createUser();
