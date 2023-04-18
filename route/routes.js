@@ -3,9 +3,11 @@ const uuid = require("uuid");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const auth = require("../middleware/auth");
+const cookieParser = require("cookie-parser");
 
 // Express route
 const Route = express.Router();
+Route.use(cookieParser());
 
 // All schema
 const postSchema = require("../model/post");
@@ -23,6 +25,10 @@ Route.route("/api/authenticate").post(async (req, res, next) => {
     var token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "2h",
     });
+    res.cookie("token", token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + 3600 * 1000),
+    });
     res.json({
       token: token,
     });
@@ -32,7 +38,9 @@ Route.route("/api/authenticate").post(async (req, res, next) => {
 // POST /api/follow/{id} authenticated user would follow user with {id}
 Route.route("/api/follow/:id").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
+    console.log(token);
+    console.log("--------");
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: req.params.id });
     // Check if user exists or not
@@ -60,7 +68,7 @@ Route.route("/api/follow/:id").post(auth, async (req, res, next) => {
 // POST /api/unfollow/{id} authenticated user would unfollow user with id
 Route.route("/api/unfollow/:id").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: req.params.id });
     // Check user to be unfollowed exist or not
@@ -90,7 +98,7 @@ Route.route("/api/unfollow/:id").post(auth, async (req, res, next) => {
 // GET /api/user should authenticate the request and return the respective user profile.
 Route.route("/api/user").get(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: decoded.id });
     // if User Exist return user Profile
@@ -116,7 +124,7 @@ Route.route("/api/user").get(auth, async (req, res, next) => {
 // POST api/posts/ would add a new post created by the authenticated user.
 Route.route("/api/posts/").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: decoded.id });
     var postId = uuid.v4();
@@ -151,7 +159,7 @@ Route.route("/api/posts/").post(auth, async (req, res, next) => {
 // DELETE api/posts/{id} would delete post with {id} created by the authenticated user.
 Route.route("/api/posts/:id").delete(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const authPost = await postSchema.findOne({
       postId: req.params.id,
@@ -181,7 +189,7 @@ Route.route("/api/posts/:id").delete(auth, async (req, res, next) => {
 // POST /api/like/{id} would like the post with {id} by the authenticated user.
 Route.route("/api/like/:id").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const authPost = await postSchema.findOne({
       postId: req.params.id,
@@ -203,7 +211,7 @@ Route.route("/api/like/:id").post(auth, async (req, res, next) => {
 // POST /api/unlike/{id} would unlike the post with {id} by the authenticated user.
 Route.route("/api/unlike/:id").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const authUser = await postSchema.findOne({
       postId: req.params.id,
@@ -225,7 +233,7 @@ Route.route("/api/unlike/:id").post(auth, async (req, res, next) => {
 // POST /api/comment/{id} add comment for post with {id} by the authenticated user.
 Route.route("/api/comment/:id").post(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const post = await postSchema.findOne({ postId: req.params.id });
     if (!post) {
@@ -263,7 +271,7 @@ Route.route("/api/comment/:id").post(auth, async (req, res, next) => {
 // GET api/posts/{id} would return a single post with {id} populated with its number of likes and comments
 Route.route("/api/posts/:id").get(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const post = await postSchema.findOne({ postId: req.params.id });
     if (!post) {
@@ -282,7 +290,7 @@ Route.route("/api/posts/:id").get(auth, async (req, res, next) => {
 // GET /api/all_posts would return all posts created by authenticated user sorted by post time.
 Route.route("/api/all_posts/").get(auth, async (req, res, next) => {
   try {
-    const token = req.headers["x-access-token"];
+    const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const allPostId = await postUserSchema.find({ userId: decoded.id });
     const allPost = [];
