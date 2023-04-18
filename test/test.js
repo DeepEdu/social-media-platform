@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const uuid = require("uuid");
 
-const app = require("./index");
-const userSchema = require("./model/user");
-const postSchema = require("./model/post");
-const postUserSchema = require("./model/postUser");
+const app = require("../index");
+const userSchema = require("../model/user");
+const postSchema = require("../model/post");
+const postUserSchema = require("../model/postUser");
 
 chai.use(chaiHttp);
 
