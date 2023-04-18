@@ -6,7 +6,7 @@ COPY package.json .
 
 RUN npm install
 
-RUN node test.js
+RUN npm test.js
 
 COPY . .
 

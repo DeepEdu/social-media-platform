@@ -23,7 +23,9 @@ Route.route("/api/authenticate").post(async (req, res, next) => {
     var token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "2h",
     });
-    res.json(token);
+    res.json({
+      token: token,
+    });
   }
 });
 
@@ -33,8 +35,9 @@ Route.route("/api/follow/:id").post(auth, async (req, res, next) => {
     const token = req.headers["x-access-token"];
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: req.params.id });
-    console.log(existingUser + "asd");
+    // Check if user exists or not
     if (existingUser) {
+      // adding follower in the following list
       const updateFollowing = await userSchema.updateOne(
         { _id: decoded.id },
         { $addToSet: { following: req.params.id } }
@@ -60,8 +63,9 @@ Route.route("/api/unfollow/:id").post(auth, async (req, res, next) => {
     const token = req.headers["x-access-token"];
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: req.params.id });
-
+    // Check user to be unfollowed exist or not
     if (existingUser) {
+      //removing follower from following list
       const updateFollowing = await userSchema.updateOne(
         { _id: decoded.id },
         { $pull: { following: req.params.id } }
@@ -89,7 +93,7 @@ Route.route("/api/user").get(auth, async (req, res, next) => {
     const token = req.headers["x-access-token"];
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: decoded.id });
-
+    // if User Exist return user Profile
     if (existingUser) {
       const data = {
         username: existingUser.username,
@@ -116,7 +120,10 @@ Route.route("/api/posts/").post(auth, async (req, res, next) => {
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: decoded.id });
     var postId = uuid.v4();
-
+    if (!req.body.title || !req.body.description) {
+      return res.status(400).send("Title and description are required");
+    }
+    // if user Exist then creating newPost
     if (existingUser) {
       const newPost = await postSchema.create({
         postId: postId,
