@@ -1,4 +1,5 @@
 # Social Media Express Application
+[![Node.js CI](https://github.com/DeepEdu/social-media-platform/actions/workflows/test-apis.yml/badge.svg?branch=main)](https://github.com/DeepEdu/social-media-platform/actions/workflows/test-apis.yml)
 
 This project is a NodeJS application that provides APIs for a social media platform. The APIs support features such as getting a user profile, following a user, uploading a post, deleting a post, liking a post, unliking a post, and commenting on a post. The application is built using ExpressJS and MongoDB.
 
