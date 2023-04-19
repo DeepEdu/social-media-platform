@@ -98,7 +98,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${tokenWithDifferentId}; expires=${new Date(
-            Date.now() + 100
+            Date.now() - 1000
           ).toUTCString()}`
         );
 
@@ -122,7 +122,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${tokenWithDifferentId}; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res).to.have.status(404);
@@ -152,7 +152,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res).to.have.status(200);
@@ -189,7 +189,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res.text).to.equal("Successfully Unfollowed user");
@@ -222,7 +222,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
 
@@ -264,7 +264,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         )
         .send(post)
@@ -294,7 +294,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         )
         .send({})
@@ -331,7 +331,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res).to.have.status(201);
@@ -359,7 +359,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res).to.have.status(400);
@@ -389,7 +389,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(res).to.have.status(401);
@@ -423,7 +423,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
@@ -456,7 +456,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
@@ -490,7 +490,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
@@ -524,7 +524,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
@@ -566,7 +566,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
@@ -588,7 +588,7 @@ describe("/", () => {
         .set(
           "cookie",
           `token=${token}  ; expires=${new Date(
-            Date.now() + 3600 * 1000
+            Date.now() + 10 * 60 * 60 * 1000
           ).toUTCString()}`
         );
       expect(response).to.have.status(201);
