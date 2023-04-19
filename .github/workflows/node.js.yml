@@ -8,12 +8,14 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+env: 
+    MONGODB_URL: "mongodb+srv://deepika:deepika@cluster0.q3ssdwc.mongodb.net/Social-media-platform?retryWrites=true&w=majority"
+    JWT_SECRET_KEY: "d51379ee179ecc9ce9bee3093ed2997e4eb2c58f6e0bcf84fd1fe8dbc9673dd1250caf"
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [18.x]
