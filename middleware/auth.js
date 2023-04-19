@@ -2,25 +2,28 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const verifyToken = (req, res, next) => {
-  console.log("--------");
   const token = req.cookies.token;
-
+  const exp = Date.parse(new Date(req.cookies.expires));
+  // check if token is provided or not
   if (!token) {
-    console.log(token);
-    console.log("--------");
-    return res.status(403).send("A token is not required for authentication");
+    const error = new Error("A token is required for authentication");
+    error.status = 403;
+    return next(error);
+  }
+  // Check if the token is expired
+  if (exp < Date.now()) {
+    const error = new Error("Token has expired");
+    error.status = 401;
+    return next(error);
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
     req.id = decoded.id;
-    // Check if the token is expired
-
-    if (Date.now() >= decoded.exp * 1000) {
-      return res.status(401).send("Token has expired");
-    }
   } catch (err) {
     console.log(err);
-    return res.status(401).send("Invalid Token ");
+    const error = new Error("Invalid Token");
+    error.status = 401;
+    return next(error);
   }
   return next();
 };

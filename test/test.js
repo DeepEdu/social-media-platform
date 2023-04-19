@@ -48,7 +48,7 @@ describe("/", () => {
         .post("/api/authenticate")
         .send({ email: "dumer1@example.com", password: "user1password" })
         .end((err, res) => {
-          expect(res).to.have.status(400);
+          expect(res).to.have.status(401);
           expect(res)
             .to.have.property("text")
             .which.contains("Not Authorised: Email Not Registered");
@@ -88,22 +88,28 @@ describe("/", () => {
       // Expired JWT Token
       const tokenWithDifferentId = jwt.sign(
         { id: userId },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: "1s" }
+        process.env.JWT_SECRET_KEY
       );
       const differentUserId = "6026df1571d3c648d84348d7";
 
       const res = await chai
         .request(app)
         .post(`/api/follow/${differentUserId}`)
-        .set("x-access-token", tokenWithDifferentId);
-      expect(res).to.have.status(400);
+        .set(
+          "cookie",
+          `token=${tokenWithDifferentId}; expires=${new Date(
+            Date.now() + 100
+          ).toUTCString()}`
+        );
+
+      expect(res).to.have.status(401);
     });
-    it('should return "400 User not found" if user is not in database', async () => {
+    it('should return "404 User not found" if user is not in database', async () => {
       // Register a new user
       newUser = await createUser();
       let userId = newUser._id;
-      const differentUserId = "6026df1571d3c648d84348d7";
+      const differentUserId = "6026df1571d3c648234548d7";
+
       // New JWT token with a different user ID
       const tokenWithDifferentId = jwt.sign(
         { id: userId },
@@ -113,9 +119,14 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .post(`/api/follow/${differentUserId}`)
-        .set("x-access-token", tokenWithDifferentId);
-      expect(res).to.have.status(400);
-      expect(res.text).to.equal("User not found");
+        .set(
+          "cookie",
+          `token=${tokenWithDifferentId}; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
+      expect(res).to.have.status(404);
+      expect(res.body.message).to.equal("User not found");
     });
 
     it('should return "Successfully Followed user" if user is in db', async () => {
@@ -131,14 +142,19 @@ describe("/", () => {
         followers: [],
         following: [],
       });
-      let testUserId = newUser._id;
+      let testUserId = testUser._id;
       // New JWT token with user ID
       token = jwt.sign({ id: userId }, process.env.JWT_SECRET_KEY);
 
       const res = await chai
         .request(app)
         .post(`/api/follow/${testUserId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(res).to.have.status(200);
       expect(res.text).to.equal("Successfully Followed user");
     });
@@ -170,7 +186,12 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .post(`/api/unfollow/${followingId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(res.text).to.equal("Successfully Unfollowed user");
       expect(res).to.have.status(200);
 
@@ -198,7 +219,12 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .get("/api/user")
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
 
       expect(res).to.have.status(201);
       expect(res.body).to.have.property("message").to.equal("User profile");
@@ -235,7 +261,12 @@ describe("/", () => {
       chai
         .request(app)
         .post("/api/posts/")
-        .set("x-access-token", token)
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        )
         .send(post)
         .end((err, res) => {
           expect(res).to.have.status(201);
@@ -260,11 +291,18 @@ describe("/", () => {
       chai
         .request(app)
         .post("/api/posts/")
-        .set("x-access-token", token)
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        )
         .send({})
         .end((err, res) => {
-          expect(res).to.have.status(400);
-          expect(res.text).to.equal("Title and description are required");
+          expect(res).to.have.status(404);
+          expect(res.body.message).to.equal(
+            "Title and description are required"
+          );
         });
     });
   }, 10000);
@@ -290,7 +328,12 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .delete(`/api/posts/${postId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(res).to.have.status(201);
       expect(res)
         .to.have.property("text")
@@ -313,7 +356,12 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .delete(`/api/posts/${postId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(res).to.have.status(400);
       expect(res)
         .to.have.property("text")
@@ -338,8 +386,13 @@ describe("/", () => {
       const res = await chai
         .request(app)
         .delete(`/api/posts/${postId}`)
-        .set("x-access-token", token);
-      expect(res).to.have.status(400);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
+      expect(res).to.have.status(401);
       expect(res)
         .to.have.property("text")
         .which.contains("Not Authorized To Delete the Post");
@@ -367,7 +420,12 @@ describe("/", () => {
       const response = await chai
         .request(app)
         .post(`/api/like/${postId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response)
         .to.have.property("text")
@@ -395,7 +453,12 @@ describe("/", () => {
       const response = await chai
         .request(app)
         .post(`/api/unlike/${postId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response)
         .to.have.property("text")
@@ -424,7 +487,12 @@ describe("/", () => {
         .request(app)
         .post(`/api/comment/${postId}`)
         .send({ comment })
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response.body)
         .to.have.property("message")
@@ -453,7 +521,12 @@ describe("/", () => {
       const response = await chai
         .request(app)
         .get(`/api/posts/${postId}`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response.body).to.have.property("postId").eql(postId);
       expect(response.body).to.have.property("likes").be.a("number");
@@ -490,7 +563,12 @@ describe("/", () => {
       const response = await chai
         .request(app)
         .get(`/api/all_posts/`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response.body.allPost).to.be.an("array");
       expect(response.body.allPost.length).to.be.equal(2);
@@ -507,7 +585,12 @@ describe("/", () => {
       const response = await chai
         .request(app)
         .get(`/api/all_posts/`)
-        .set("x-access-token", token);
+        .set(
+          "cookie",
+          `token=${token}  ; expires=${new Date(
+            Date.now() + 3600 * 1000
+          ).toUTCString()}`
+        );
       expect(response).to.have.status(201);
       expect(response)
         .to.have.property("text")
