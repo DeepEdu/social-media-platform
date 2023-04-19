@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const auth = require("../middleware/auth");
 const cookieParser = require("cookie-parser");
+const errorMiddleware = require("../middleware/error");
 
 // Express route
 const Route = express.Router();
@@ -18,13 +19,13 @@ const userSchema = require("../model/user");
 Route.route("/api/authenticate").post(async (req, res, next) => {
   const existingUser = await userSchema.findOne({ email: req.body.email });
   if (!existingUser) {
-    return res.status(400).send("Not Authorised: Email Not Registered");
+    const error = new Error("Not Authorised: Email Not Registered");
+    error.status = 401;
+    return next(error);
   } else {
     var access;
     // Create Token
-    var token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "2h",
-    });
+    var token = jwt.sign({ id: existingUser.id }, process.env.JWT_SECRET_KEY);
     res.cookie("token", token, {
       httpOnly: true,
       expires: new Date(Date.now() + 3600 * 1000),
@@ -39,10 +40,11 @@ Route.route("/api/authenticate").post(async (req, res, next) => {
 Route.route("/api/follow/:id").post(auth, async (req, res, next) => {
   try {
     const token = req.cookies.token;
-    console.log(token);
-    console.log("--------");
     const decoded = jwt.decode(token);
+
     const existingUser = await userSchema.findOne({ _id: req.params.id });
+    // console.log(token);
+
     // Check if user exists or not
     if (existingUser) {
       // adding follower in the following list
@@ -58,7 +60,9 @@ Route.route("/api/follow/:id").post(auth, async (req, res, next) => {
 
       return res.status(200).send("Successfully Followed user");
     } else {
-      return res.status(400).send("User not found");
+      const error = new Error("User not found");
+      error.status = 404;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -85,10 +89,14 @@ Route.route("/api/unfollow/:id").post(auth, async (req, res, next) => {
       );
 
       if (updateFollowing.nModified === 0 || updateFollowers.nModified === 0) {
-        return res.status(400).send("Failed to Unfollow user");
+        const error = new Error("Failed to Unfollow user");
+        error.status = 400;
+        return next(error);
       } else return res.status(200).send("Successfully Unfollowed user");
     } else {
-      return res.status(400).send("User not found");
+      const error = new Error("User not found");
+      error.status = 404;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -101,6 +109,7 @@ Route.route("/api/user").get(auth, async (req, res, next) => {
     const token = req.cookies.token;
     const decoded = jwt.decode(token);
     const existingUser = await userSchema.findOne({ _id: decoded.id });
+
     // if User Exist return user Profile
     if (existingUser) {
       const data = {
@@ -114,7 +123,9 @@ Route.route("/api/user").get(auth, async (req, res, next) => {
         data: data,
       });
     } else {
-      return res.status(400).send("User not found");
+      const error = new Error("User not found");
+      error.status = 404;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -129,7 +140,9 @@ Route.route("/api/posts/").post(auth, async (req, res, next) => {
     const existingUser = await userSchema.findOne({ _id: decoded.id });
     var postId = uuid.v4();
     if (!req.body.title || !req.body.description) {
-      return res.status(400).send("Title and description are required");
+      const error = new Error("Title and description are required");
+      error.status = 404;
+      return next(error);
     }
     // if user Exist then creating newPost
     if (existingUser) {
@@ -149,7 +162,9 @@ Route.route("/api/posts/").post(auth, async (req, res, next) => {
         time: newPost.time,
       });
     } else {
-      return res.status(400).send("User not found");
+      const error = new Error("User not found");
+      error.status = 404;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -164,13 +179,15 @@ Route.route("/api/posts/:id").delete(auth, async (req, res, next) => {
     const authPost = await postSchema.findOne({
       postId: req.params.id,
     });
-    // console.log("+++");
+    // console.log(authPost);
     if (authPost !== null) {
       const authUser = await postUserSchema.findOne({
         postId: req.params.id,
       });
       if (authUser.userId !== decoded.id) {
-        return res.status(400).json("Not Authorized To Delete the Post");
+        const error = new Error("Not Authorized To Delete the Post");
+        error.status = 401;
+        return next(error);
       }
       await postSchema.findOneAndDelete({ postId: req.params.id });
       await postUserSchema.findOneAndDelete({
@@ -179,7 +196,9 @@ Route.route("/api/posts/:id").delete(auth, async (req, res, next) => {
       });
       return res.status(201).json("Successfully Deleted The Post");
     } else {
-      return res.status(400).json("The post don't Exist");
+      const error = new Error("The post don't Exist");
+      error.status = 400;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -201,7 +220,9 @@ Route.route("/api/like/:id").post(auth, async (req, res, next) => {
       );
       return res.status(201).json("Successfully Liked The Post");
     } else {
-      return res.json("Post Doesnot Exist");
+      const error = new Error("Post Doesnot Exist");
+      error.status = 400;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -223,7 +244,9 @@ Route.route("/api/unlike/:id").post(auth, async (req, res, next) => {
       );
       return res.status(201).json("Successfully Unliked The Post");
     } else {
-      return res.json("Post Doesnot Exist");
+      const error = new Error("Post Doesnot Exist");
+      error.status = 400;
+      return next(error);
     }
   } catch (error) {
     return next(error);
@@ -237,7 +260,9 @@ Route.route("/api/comment/:id").post(auth, async (req, res, next) => {
     const decoded = jwt.decode(token);
     const post = await postSchema.findOne({ postId: req.params.id });
     if (!post) {
-      return res.status(404).json("Post Doesn't Exist");
+      const error = new Error("Post Doesn't Exist");
+      error.status = 400;
+      return next(error);
     }
     // const authUser = await postUserSchema.findOne({
     //   postId: req.params.id,
@@ -275,7 +300,9 @@ Route.route("/api/posts/:id").get(auth, async (req, res, next) => {
     const decoded = jwt.decode(token);
     const post = await postSchema.findOne({ postId: req.params.id });
     if (!post) {
-      return res.status(404).json("Post not found");
+      const error = new Error("Post not found");
+      error.status = 400;
+      return next(error);
     }
     return res.status(201).json({
       postId: req.params.id,
@@ -296,7 +323,8 @@ Route.route("/api/all_posts/").get(auth, async (req, res, next) => {
     const allPost = [];
     for (let i = 0; i < allPostId.length; i++) {
       let post = await postSchema.find({ postId: allPostId[i].postId });
-      console.log(post[0].postId);
+      //   console.log(post[0].postId);
+
       allPost.push({
         id: post[0].postId,
         title: post[0].title,
