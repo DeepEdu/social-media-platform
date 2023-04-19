@@ -1,0 +1,318 @@
+{
+	"info": {
+		"_postman_id": "0a54608d-1258-42c8-a743-21dec776e401",
+		"name": "Social-Media-Platform",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "authenticate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"dummyuser3@example.com\",\n    \"password\":\"user3password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/authenticate",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "posts",
+			"item": [
+				{
+					"name": "Create post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"New Post\",\n    \"description\":\"description Post 1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/posts/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"posts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get post",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/posts/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"posts",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2cefb4fb-6b74-43f5-a6c6-7ec95bfcd47f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all posts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/all_posts/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"all_posts",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete post",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/posts/1b1091d0-7f2b-42ae-840b-2be4102c3f4a",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"posts",
+								"1b1091d0-7f2b-42ae-840b-2be4102c3f4a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "like post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/like/2cefb4fb-6b74-43f5-a6c6-7ec95bfcd47f",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"like",
+								"2cefb4fb-6b74-43f5-a6c6-7ec95bfcd47f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unlike post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/unlike/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"unlike",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2cefb4fb-6b74-43f5-a6c6-7ec95bfcd47f"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "comment on post",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"comment\":\"comment test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/api/comment/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"comment",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2cefb4fb-6b74-43f5-a6c6-7ec95bfcd47f"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "follow user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-access-token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY0M2NmODRkNTZhNTY4YmUxZjQxYTAyMCIsInJvbGVzIjoiQXV0aCIsImlhdCI6MTY4MTcxNzM0MSwiZXhwIjoxNjgxNzI0NTQxfQ.wF6mQ2Rvb0Eg2fCuwZouDcJsOlvLki1RHC6V7b4YYcM",
+								"type": "default",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{host}}/api/follow/643fb4c6a82f3e960da5b6b4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"follow",
+								"643fb4c6a82f3e960da5b6b4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "unfollow user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/unfollow/643fb4c6a82f3e960da5b6b4",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"unfollow",
+								"643fb4c6a82f3e960da5b6b4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/api/user/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"api",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local",
+			"value": "http://localhost:8081"
+		},
+		{
+			"key": "host",
+			"value": "{{render}}"
+		},
+		{
+			"key": "render",
+			"value": "https://social-media-platform-backend.onrender.com"
+		}
+	]
+}
