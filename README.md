@@ -75,4 +75,4 @@ this will run and verify all the testcases.
 
 All test cases are listed in [./test/README.md](./test/README.md)
 
-PostMan Collection can be found [here](https://www.postman.com/payload-astronomer-70816502/workspace/social-media-platform/collection/27002600-a6b3b913-8fb3-4e30-b1e1-e42f3f5fac1c?action=share&creator=27002600).
+PostMan Collection can be found [here](https://www.postman.com/payload-astronomer-70816502/workspace/deepika-s-workspace/collection/27002600-a6b3b913-8fb3-4e30-b1e1-e42f3f5fac1c?action=share&creator=27002600).
