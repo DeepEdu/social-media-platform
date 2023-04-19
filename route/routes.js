@@ -157,6 +157,7 @@ Route.route("/api/posts/").post(auth, async (req, res, next) => {
       //Creating postId userId table
       postUserSchema.create({ postId: postId, userId: decoded.id });
       return res.status(201).json({
+        postId: newPost.postId,
         title: newPost.title,
         description: newPost.description,
         time: newPost.time,

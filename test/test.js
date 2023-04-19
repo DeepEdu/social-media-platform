@@ -270,6 +270,7 @@ describe("/", () => {
         .send(post)
         .end((err, res) => {
           expect(res).to.have.status(201);
+          expect(res.body).to.have.property("postId");
           expect(res.body).to.have.property("title").to.equal(post.title);
 
           expect(res.body)
